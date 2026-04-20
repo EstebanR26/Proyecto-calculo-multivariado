@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicativo interactivo para cálculo multivariado">
+    <meta name="author" content="Proyecto Final - Ingeniería de Software">
+    <title>Calculadora de Cálculo Multivariado</title>
+    
+    <!-- CDN Libraries -->
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>🧮 MultiCalc 3D</h1>
+            <p>Visualización y cálculo de funciones de múltiples variables</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'visualizacion')">📊 Visualización 3D</button>
+            <button class="tab" onclick="openTab(event, 'dominio')">🎯 Dominio y Rango</button>
+            <button class="tab" onclick="openTab(event, 'derivadas')">∂ Derivadas Parciales</button>
+            <button class="tab" onclick="openTab(event, 'gradiente')">∇ Gradiente</button>
+            <button class="tab" onclick="openTab(event, 'optimizacion')">📈 Optimización</button>
+            <button class="tab" onclick="openTab(event, 'integrales')">∫∫ Integrales Múltiples</button>
+            <button class="tab" onclick="openTab(event, 'aplicaciones')">🔬 Aplicaciones</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- TAB 1: VISUALIZACIÓN 3D -->
+            <div id="visualizacion" class="tab-content active">
+                <h2>Visualización de Funciones de Dos Variables</h2>
+                
+                <div class="example-functions">
+                    <h4>📝 Funciones de Ejemplo:</h4>
+                    <span class="example-btn" onclick="setFunction('viz', 'x^2 + y^2')">z = x² + y² (Paraboloide)</span>
+                    <span class="example-btn" onclick="setFunction('viz', 'sin(sqrt(x^2 + y^2))')">z = sin(√(x²+y²)) (Ondas)</span>
+                    <span class="example-btn" onclick="setFunction('viz', 'x^2 - y^2')">z = x² - y² (Silla de montar)</span>
+                    <span class="example-btn" onclick="setFunction('viz', 'exp(-(x^2 + y^2))')">z = e^(-(x²+y²)) (Gaussiana)</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función f(x, y):</label>
+                    <input type="text" id="function-viz" placeholder="Ejemplo: x^2 + y^2" value="x^2 + y^2">
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Rango X: [min, max]</label>
+                        <input type="text" id="x-range-viz" value="-5, 5">
+                    </div>
+                    <div class="input-group">
+                        <label>Rango Y: [min, max]</label>
+                        <input type="text" id="y-range-viz" value="-5, 5">
+                    </div>
+                </div>
+
+                <button onclick="visualize3D()">🎨 Visualizar Superficie 3D</button>
+                
+                <div class="plot-container" id="plot-3d"></div>
+            </div>
+
+            <!-- TAB 2: DOMINIO Y RANGO -->
+            <div id="dominio" class="tab-content">
+                <h2>Análisis de Dominio y Rango</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Información:</strong> El dominio es el conjunto de todos los pares (x,y) donde la función está definida. El rango es el conjunto de todos los valores z que puede tomar la función.
+                </div>
+
+                <div class="example-functions">
+                    <h4>📝 Funciones de Ejemplo:</h4>
+                    <span class="example-btn" onclick="setFunction('dom', 'sqrt(25 - x^2 - y^2)')">z = √(25-x²-y²)</span>
+                    <span class="example-btn" onclick="setFunction('dom', 'log(x) + log(y)')">z = ln(x) + ln(y)</span>
+                    <span class="example-btn" onclick="setFunction('dom', '1/(x^2 + y^2 - 1)')">z = 1/(x²+y²-1)</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función f(x, y):</label>
+                    <input type="text" id="function-dom" placeholder="Ejemplo: sqrt(1 - x^2 - y^2)" value="sqrt(1 - x^2 - y^2)">
+                </div>
+
+                <button onclick="analyzeDomain()">🔍 Analizar Dominio y Rango</button>
+
+                <div id="domain-result"></div>
+            </div>
+
+            <!-- TAB 3: DERIVADAS PARCIALES -->
+            <div id="derivadas" class="tab-content">
+                <h2>Derivadas Parciales</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Información:</strong> Las derivadas parciales ∂f/∂x y ∂f/∂y representan la tasa de cambio de la función con respecto a cada variable, manteniendo la otra constante.
+                </div>
+
+                <div class="example-functions">
+                    <h4>📝 Funciones de Ejemplo:</h4>
+                    <span class="example-btn" onclick="setFunction('der', 'x^3 + y^3 - 3*x*y')">f = x³ + y³ - 3xy</span>
+                    <span class="example-btn" onclick="setFunction('der', 'sin(x) * cos(y)')">f = sin(x)cos(y)</span>
+                    <span class="example-btn" onclick="setFunction('der', 'exp(x*y)')">f = e^(xy)</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función f(x, y):</label>
+                    <input type="text" id="function-der" placeholder="Ejemplo: x^2 * y + sin(x)" value="x^2 * y + sin(x)">
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Punto x₀:</label>
+                        <input type="number" id="x0-der" value="1" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Punto y₀:</label>
+                        <input type="number" id="y0-der" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculatePartialDerivatives()">∂ Calcular Derivadas Parciales</button>
+
+                <div id="derivatives-result"></div>
+            </div>
+
+            <!-- TAB 4: GRADIENTE -->
+            <div id="gradiente" class="tab-content">
+                <h2>Campo Gradiente</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Información:</strong> El gradiente ∇f = (∂f/∂x, ∂f/∂y) apunta en la dirección de máximo crecimiento de la función. Su magnitud indica qué tan rápido crece la función en esa dirección.
+                </div>
+
+                <div class="example-functions">
+                    <h4>📝 Funciones de Ejemplo:</h4>
+                    <span class="example-btn" onclick="setFunction('grad', 'x^2 + y^2')">f = x² + y²</span>
+                    <span class="example-btn" onclick="setFunction('grad', 'x*y')">f = xy</span>
+                    <span class="example-btn" onclick="setFunction('grad', 'sin(x)*cos(y)')">f = sin(x)cos(y)</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función f(x, y):</label>
+                    <input type="text" id="function-grad" placeholder="Ejemplo: x^2 + y^2" value="x^2 + y^2">
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Punto x₀:</label>
+                        <input type="number" id="x0-grad" value="2" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Punto y₀:</label>
+                        <input type="number" id="y0-grad" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculateGradient()">∇ Calcular Gradiente y Visualizar</button>
+
+                <div id="gradient-result"></div>
+                <div class="plot-container" id="plot-gradient"></div>
+            </div>
+
+            <!-- TAB 5: OPTIMIZACIÓN -->
+            <div id="optimizacion" class="tab-content">
+                <h2>Optimización con Restricciones (Multiplicadores de Lagrange)</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Información:</strong> Encuentra los extremos de f(x,y) sujeto a la restricción g(x,y) = 0 usando el método de multiplicadores de Lagrange: ∇f = λ∇g
+                </div>
+
+                <div class="example-functions">
+                    <h4>📝 Problemas de Ejemplo:</h4>
+                    <span class="example-btn" onclick="setOptimizationExample(1)">Maximizar f=xy con x²+y²=1</span>
+                    <span class="example-btn" onclick="setOptimizationExample(2)">Minimizar f=x²+y² con x+y=1</span>
+                    <span class="example-btn" onclick="setOptimizationExample(3)">Optimizar f=x²+2y² con 2x+y=4</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función Objetivo f(x, y):</label>
+                    <input type="text" id="function-opt" placeholder="Ejemplo: x * y" value="x * y">
+                </div>
+
+                <div class="input-group">
+                    <label>Restricción g(x, y) = 0 (escribir como ecuación igualada a 0):</label>
+                    <input type="text" id="constraint-opt" placeholder="Ejemplo: x^2 + y^2 - 1" value="x^2 + y^2 - 1">
+                </div>
+
+                <button onclick="optimizeWithConstraints()">🎯 Optimizar (Método de Lagrange)</button>
+
+                <div id="optimization-result"></div>
+                <div class="plot-container" id="plot-optimization"></div>
+            </div>
+
+            <!-- TAB 6: INTEGRALES MÚLTIPLES -->
+            <div id="integrales" class="tab-content">
+                <h2>Integrales Dobles</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Información:</strong> Las integrales dobles ∫∫ f(x,y) dA calculan volúmenes bajo superficies, áreas de regiones, masas y centros de masa.
+                </div>
+
+                <div class="example-functions">
+                    <h4>📝 Ejemplos de Integrales:</h4>
+                    <span class="example-btn" onclick="setFunction('int', '1')">Área de región</span>
+                    <span class="example-btn" onclick="setFunction('int', 'x + y')">Volumen plano inclinado</span>
+                    <span class="example-btn" onclick="setFunction('int', 'x^2 + y^2')">Volumen paraboloide</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Función f(x, y):</label>
+                    <input type="text" id="function-int" placeholder="Ejemplo: x^2 + y^2" value="x^2 + y^2">
+                </div>
+
+                <h3>Límites de Integración:</h3>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>x desde:</label>
+                        <input type="number" id="x-min-int" value="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>x hasta:</label>
+                        <input type="number" id="x-max-int" value="1" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>y desde:</label>
+                        <input type="number" id="y-min-int" value="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>y hasta:</label>
+                        <input type="number" id="y-max-int" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculateDoubleIntegral()">∫∫ Calcular Integral Doble</button>
+
+                <div id="integral-result"></div>
+                <div class="plot-container" id="plot-integral"></div>
+            </div>
+
+            <!-- TAB 7: APLICACIONES -->
+            <div id="aplicaciones" class="tab-content">
+                <h2>Aplicaciones Físicas</h2>
+                
+                <div class="info-box">
+                    <strong>💡 Aplicaciones:</strong> Cálculo de masa, centro de masa, momentos de inercia y otras propiedades físicas usando integrales múltiples.
+                </div>
+
+                <h3>Cálculo de Masa y Centro de Masa</h3>
+                
+                <div class="input-group">
+                    <label>Función de Densidad ρ(x, y):</label>
+                    <input type="text" id="density-app" placeholder="Ejemplo: 1 + x + y" value="1">
+                </div>
+
+                <h4>Región (Rectangular):</h4>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>x desde:</label>
+                        <input type="number" id="x-min-app" value="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>x hasta:</label>
+                        <input type="number" id="x-max-app" value="2" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>y desde:</label>
+                        <input type="number" id="y-min-app" value="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>y hasta:</label>
+                        <input type="number" id="y-max-app" value="2" step="0.1">
+                    </div>
+                </div>
+
+                <button onclick="calculateMassAndCenter()">⚖️ Calcular Masa y Centro de Masa</button>
+
+                <div id="application-result"></div>
+                <div class="plot-container" id="plot-application"></div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <footer>
+            <p><strong>Calculadora de Cálculo Multivariado</strong> | Proyecto Final</p>
+            <p>Ingeniería de Software | 2025</p>
+        </footer>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
